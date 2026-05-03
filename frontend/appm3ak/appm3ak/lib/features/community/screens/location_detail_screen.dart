@@ -79,13 +79,20 @@ void _openReport(
 }
 
 void _safeBackToCommunity(BuildContext context) {
-  final nav = Navigator.of(context);
-  if (nav.canPop()) {
-    nav.pop();
-    return;
-  }
-  if (context.mounted) {
-    context.go('/home?tab=3&communityTab=0');
+  try {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    if (context.mounted) {
+      context.go('/home');
+    }
+  } catch (_) {
+    if (context.mounted) {
+      try {
+        context.go('/home');
+      } catch (_) {}
+    }
   }
 }
 
@@ -244,8 +251,7 @@ class LocationDetailScreen extends ConsumerWidget {
                           ),
                         ),
                 ),
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                leading: BackButton(
                   onPressed: () => _safeBackToCommunity(context),
                 ),
               ),

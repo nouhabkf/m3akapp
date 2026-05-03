@@ -68,6 +68,23 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   String? _ttsResumeText;
   String? _autoActionDedupKey;
 
+  void _safePopPostDetail() {
+    if (!mounted) return;
+    try {
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/home');
+      }
+    } catch (_) {
+      if (mounted) {
+        try {
+          context.go('/home');
+        } catch (_) {}
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -617,6 +634,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       resizeToAvoidBottomInset: true,
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        leading: BackButton(onPressed: _safePopPostDetail),
         title: Text(strings.postDetails),
         actions: [
           IconButton(
@@ -657,6 +675,9 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
           final canDeletePost = user != null &&
               (user.isAdmin == true || post.userId == user.id);
           final dangerMsg = postDetailDangerBannerMessage(post);
+          final dl = post.dangerLevel?.toLowerCase().trim() ?? '';
+          final showRedDangerBanner =
+              dl == 'critical' || dl == 'high';
           final pad = _simplifiedUi ? 20.0 : 16.0;
           final sectionTitleStyle = _simplifiedUi
               ? theme.textTheme.titleMedium?.copyWith(
@@ -704,7 +725,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _PostHeader(post: post),
-                      if (dangerMsg != null) ...[
+                      if (showRedDangerBanner) ...[
                         const SizedBox(height: 14),
                         Semantics(
                           liveRegion: true,
@@ -723,7 +744,9 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
-                                      dangerMsg,
+                                      dangerMsg ??
+                                          'Ce signalement est marqué comme à risque élevé ou critique. '
+                                          'Restez prudent et demandez de l’aide si nécessaire.',
                                       style: theme.textTheme.bodyMedium?.copyWith(
                                         color: theme.colorScheme.onErrorContainer,
                                         fontWeight: FontWeight.w600,

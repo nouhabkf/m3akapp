@@ -74,14 +74,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       setState(() => _isLoading = false);
       return;
     }
-    final email = _emailValue;
-    if (email == null || email.isEmpty) {
+    final emailRaw = _emailValue;
+    if (emailRaw == null || emailRaw.isEmpty) {
       setState(() {
         _isLoading = false;
         _errorMessage = 'L\'adresse e-mail est obligatoire.';
       });
       return;
     }
+    final email = emailRaw.trim().toLowerCase();
     if (_telephoneValue.isEmpty) {
       setState(() {
         _isLoading = false;
@@ -120,7 +121,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             : _specialisationController.text.trim(),
         langue: _preferredLanguage?.name ?? 'fr',
       );
-      if (mounted) context.go('/login');
+      if (!mounted) return;
+      // Connexion immédiate avec le même mot de passe (évite échecs de login
+      // dus à casse d’e-mail / oubli de se reconnecter manuellement).
+      await ref.read(authStateProvider.notifier).login(
+            email: email,
+            password: _passwordController.text,
+          );
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      context.go('/home');
     } catch (e) {
       setState(() {
         _isLoading = false;

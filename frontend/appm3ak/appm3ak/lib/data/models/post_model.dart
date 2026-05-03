@@ -122,6 +122,7 @@ class PostModel extends Equatable {
     this.liveStatus = LiveStatus.ended,
     this.viewersCount = 0,
     this.liveVideoUrl,
+    this.dangerLevel,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -188,6 +189,7 @@ class PostModel extends Equatable {
       liveStatus: LiveStatus.fromString(json['liveStatus']?.toString()),
       viewersCount: (json['viewersCount'] as num?)?.toInt() ?? 0,
       liveVideoUrl: json['liveVideoUrl']?.toString(),
+      dangerLevel: json['dangerLevel']?.toString(),
     );
   }
 
@@ -221,6 +223,8 @@ class PostModel extends Equatable {
   final LiveStatus liveStatus;
   final int viewersCount;
   final String? liveVideoUrl;
+  /// Niveau de danger du signalement (`none`, `low`, `high`, `critical`, …).
+  final String? dangerLevel;
 
   /// Afficher la carte de validation obstacle (lieu / obstacle signalé).
   bool get showsObstacleValidation =>
@@ -262,6 +266,7 @@ class PostModel extends Equatable {
         'liveStatus': liveStatus.toApiString(),
         'viewersCount': viewersCount,
         'liveVideoUrl': liveVideoUrl,
+        'dangerLevel': dangerLevel,
       };
 
   PostModel copyWith({
@@ -293,6 +298,7 @@ class PostModel extends Equatable {
     LiveStatus? liveStatus,
     int? viewersCount,
     String? liveVideoUrl,
+    String? dangerLevel,
   }) =>
       PostModel(
         id: id ?? this.id,
@@ -324,6 +330,7 @@ class PostModel extends Equatable {
         liveStatus: liveStatus ?? this.liveStatus,
         viewersCount: viewersCount ?? this.viewersCount,
         liveVideoUrl: liveVideoUrl ?? this.liveVideoUrl,
+        dangerLevel: dangerLevel ?? this.dangerLevel,
       );
 
   @override
@@ -350,6 +357,7 @@ class PostModel extends Equatable {
         liveStatus,
         viewersCount,
         liveVideoUrl,
+        dangerLevel,
       ];
 }
 

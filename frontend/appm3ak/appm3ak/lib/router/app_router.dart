@@ -10,12 +10,13 @@ import '../features/community/screens/community_contacts_route_screen.dart';
 import '../features/community/screens/community_ai_entry_screen.dart';
 import '../features/community/screens/community_locations_screen.dart';
 import '../features/community/screens/community_live_screen.dart';
-import '../features/community/screens/community_main_screen.dart';
 import '../features/community/screens/messages_screen.dart';
 import '../features/community/screens/chat_screen.dart';
 import '../features/community/screens/community_nearby_places_screen.dart';
 import '../features/community/screens/create_help_request_screen.dart';
 import '../features/accessibility/accessibility_post_handoff.dart';
+import '../features/accessibility/screens/reservation_screen.dart';
+import '../features/accessibility/screens/reservations_history_screen.dart';
 import '../features/accessibility/head_gesture_post_screen.dart';
 import '../features/accessibility/vibration_coded_post_screen.dart';
 import '../features/accessibility/voice_vibration_post_screen.dart';
@@ -52,14 +53,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     authRefresh.value++;
   });
 
-  final auth = ref.watch(authStateProvider);
-  final user = auth.valueOrNull;
-
+  // Ne pas `watch` l’auth ici : ça recréait GoRouter à chaque transition (loading→data),
+  // ce qui peut laisser l’écran vide. On lit l’état à la demande dans `redirect` uniquement.
   return GoRouter(
     navigatorKey: m3akRootNavigatorKey,
     initialLocation: '/',
     refreshListenable: authRefresh,
     redirect: (context, state) {
+      final auth = ref.read(authStateProvider);
+      final user = auth.valueOrNull;
       final loc = state.uri.path;
 
       // Public routes
@@ -116,14 +118,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final communityTab =
               int.tryParse(state.uri.queryParameters['communityTab'] ?? '') ?? 0;
           return MainShell(
-            initialIndex: tab.clamp(0, 4),
+            initialIndex: tab.clamp(0, 5),
             communityTabIndex: communityTab.clamp(0, 3),
           );
         },
       ),
       GoRoute(
         path: '/profile',
-        builder: (_, _) => const MainShell(initialIndex: 4),
+        builder: (_, _) => const MainShell(initialIndex: 5),
       ),
       GoRoute(
         path: '/profile-edit',
@@ -180,7 +182,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Routes pour Posts
       GoRoute(
         path: '/community-posts',
-        builder: (_, _) => const CommunityMainScreen(initialTabIndex: 1),
+        redirect: (_, _) => '/home?tab=4',
       ),
       GoRoute(
         path: '/community-live',
@@ -206,6 +208,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/create-post',
         builder: (_, state) {
+          final hintParam = state.uri.queryParameters['accessibilityContentHint'];
+          final hint = (hintParam != null && hintParam.trim().isNotEmpty)
+              ? hintParam.trim()
+              : null;
           final extra = state.extra;
           if (extra is M3akCreatePostLaunch) {
             return CreatePostScreen(
@@ -214,16 +220,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               autoPublishAfterCamera: extra.autoPublishAfterCamera,
               accessibilityAnnounceGalleryVolumeOrCameraFallback:
                   extra.accessibilityAnnounceGalleryVolumeOrCameraFallback,
+              contentHintOverride: hint,
             );
           }
           if (extra is AccessibilityPostHandoff) {
-            return CreatePostScreen(initialAccessibilityHandoff: extra);
+            return CreatePostScreen(
+              initialAccessibilityHandoff: extra,
+              contentHintOverride: hint,
+            );
           }
           if (extra is CommunityActionPlanResult) {
-            return CreatePostScreen(initialAiPlan: extra);
+            return CreatePostScreen(
+              initialAiPlan: extra,
+              contentHintOverride: hint,
+            );
           }
           final initial = extra is String ? extra : null;
-          return CreatePostScreen(initialContent: initial);
+          return CreatePostScreen(
+            initialContent: initial,
+            contentHintOverride: hint,
+          );
         },
       ),
       GoRoute(
@@ -258,6 +274,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             autoReadSummary: autoReadSummary,
             audioSelectionMode: audioSelectionMode,
           );
+        },
+      ),
+      /// Alias module Accessibilité (`community_post_source.routePath`).
+      GoRoute(
+        path: '/community/post-detail/:postId',
+        redirect: (_, state) {
+          final id = state.pathParameters['postId'] ?? '';
+          return '/post-detail/$id';
         },
       ),
       // Routes pour Help Requests
@@ -297,6 +321,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/m3ak-inclusion',
         builder: (_, _) => const M3akInclusionPage(),
+      ),
+      GoRoute(
+        path: '/reserve-access',
+        builder: (context, state) {
+          final extra = state.extra;
+          final name =
+              extra is String && extra.trim().isNotEmpty ? extra.trim() : '';
+          return ReservationScreen(placeName: name);
+        },
+      ),
+      GoRoute(
+        path: '/reservations-history',
+        builder: (_, _) => const ReservationsHistoryScreen(),
       ),
       GoRoute(
         path: '/health-chat',

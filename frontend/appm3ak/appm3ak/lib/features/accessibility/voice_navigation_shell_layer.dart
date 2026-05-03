@@ -61,7 +61,7 @@ class _VoiceNavigationShellLayerState extends State<VoiceNavigationShellLayer> {
           child: Semantics(
             button: true,
             label:
-                'Assistant navigation vocale. Dites accueil, santé, transport, milieux, posts, profil ou créer un post.',
+                'Assistant navigation vocale. Dites accueil, santé, transport, lieux, communauté, profil ou créer un post.',
             child: Tooltip(
               message: kIsWeb
                   ? 'Navigation vocale (Chrome demandera le micro)'
@@ -391,7 +391,7 @@ class _VoiceNavSessionPanelState extends State<_VoiceNavSessionPanel> {
       case VoiceNavCommand.communityPosts:
         return 'Voici les publications de la communauté.';
       case VoiceNavCommand.community:
-        return 'Ouverture Milieux.';
+        return 'Ouverture des lieux et accessibilité.';
       case VoiceNavCommand.communityPlaces:
         return 'Ouverture des lieux.';
       case VoiceNavCommand.communityHelp:
@@ -515,31 +515,25 @@ class _VoiceNavSessionPanelState extends State<_VoiceNavSessionPanel> {
             .toString();
         break;
       case VoiceNavCommand.communityPosts:
-        location = Uri(
-          path: '/home',
-          queryParameters: const {'tab': '3', 'communityTab': '1'},
-        ).toString();
+        location =
+            Uri(path: '/home', queryParameters: const {'tab': '4'}).toString();
         break;
       case VoiceNavCommand.communityPlaces:
-        location = Uri(
-          path: '/home',
-          queryParameters: const {'tab': '3', 'communityTab': '0'},
-        ).toString();
+        location =
+            Uri(path: '/home', queryParameters: const {'tab': '3'}).toString();
         break;
       case VoiceNavCommand.communityProches:
-        location = Uri(
-          path: '/home',
-          queryParameters: const {'tab': '3', 'communityTab': '2'},
-        ).toString();
+        location =
+            Uri(path: '/home', queryParameters: const {'tab': '3'}).toString();
         break;
       case VoiceNavCommand.communityHelp:
         location = Uri(
           path: '/home',
-          queryParameters: const {'tab': '3', 'communityTab': '3'},
+          queryParameters: const {'tab': '4', 'communityTab': '3'},
         ).toString();
         break;
       case VoiceNavCommand.profile:
-        location = Uri(path: '/home', queryParameters: const {'tab': '4'})
+        location = Uri(path: '/home', queryParameters: const {'tab': '5'})
             .toString();
         break;
       case VoiceNavCommand.createPost:

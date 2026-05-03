@@ -31,7 +31,7 @@ class UserRepository {
     final body = <String, dynamic>{
       'nom': nom,
       'prenom': prenom,
-      'email': email,
+      'email': email.trim().toLowerCase(),
       'password': password,
       'telephone': telephone,
       'role': role,

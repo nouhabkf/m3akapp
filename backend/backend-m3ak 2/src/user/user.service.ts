@@ -21,31 +21,52 @@ export class UserService {
     createUserDto: CreateUserDto,
     photoProfil?: string,
   ): Promise<Omit<UserDocument, 'password'>> {
-    const existing = await this.userModel
-      .findOne({ email: createUserDto.email.toLowerCase() })
-      .exec();
+    const emailNorm = createUserDto.email.trim().toLowerCase();
+    const existing = await this.userModel.findOne({ email: emailNorm }).exec();
     if (existing) {
       throw new ConflictException('Cet email est déjà utilisé');
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
+    // Document explicite (pas de spread du DTO) : évite champs parasites / undefined
+    // qui peuvent faire échouer Mongoose ou écraser le hash mot de passe.
     const user = await this.userModel.create({
-      ...createUserDto,
-      email: createUserDto.email.toLowerCase(),
+      nom: createUserDto.nom.trim(),
+      prenom: createUserDto.prenom.trim(),
+      email: emailNorm,
       password: hashedPassword,
+      telephone: UserService.normalizeOptionalString(createUserDto.telephone),
       role: createUserDto.role ?? Role.HANDICAPE,
-      photoProfil: photoProfil ?? null,
+      typeHandicap: UserService.normalizeOptionalString(createUserDto.typeHandicap),
+      besoinSpecifique: UserService.normalizeOptionalString(
+        createUserDto.besoinSpecifique,
+      ),
       animalAssistance: createUserDto.animalAssistance ?? false,
+      typeAccompagnant: UserService.normalizeOptionalString(
+        createUserDto.typeAccompagnant,
+      ),
+      specialisation: UserService.normalizeOptionalString(
+        createUserDto.specialisation,
+      ),
       disponible: createUserDto.disponible ?? false,
       noteMoyenne: 0,
       trustPoints: 0,
-      statut: createUserDto.statut ?? 'ACTIF',
-      langue: createUserDto.langue ?? 'fr',
+      langue: (createUserDto.langue ?? 'fr').trim() || 'fr',
+      photoProfil: photoProfil ?? null,
+      statut: (createUserDto.statut ?? 'ACTIF').trim() || 'ACTIF',
       partenaire: createUserDto.partenaire ?? false,
     });
 
     return this.toUserResponse(user);
+  }
+
+  private static normalizeOptionalString(
+    value?: string | null,
+  ): string | null {
+    if (value == null) return null;
+    const t = String(value).trim();
+    return t.length > 0 ? t : null;
   }
 
   async findAll(params: {

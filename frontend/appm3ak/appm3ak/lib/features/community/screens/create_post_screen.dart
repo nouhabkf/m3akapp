@@ -34,6 +34,7 @@ class CreatePostScreen extends ConsumerStatefulWidget {
     this.initialPostType,
     this.initialAccessibilityHandoff,
     this.initialAiPlan,
+    this.contentHintOverride,
   });
 
   final String? initialContent;
@@ -46,6 +47,9 @@ class CreatePostScreen extends ConsumerStatefulWidget {
   final PostType? initialPostType;
   final AccessibilityPostHandoff? initialAccessibilityHandoff;
   final CommunityActionPlanResult? initialAiPlan;
+
+  /// Surcharge du hint du champ « contenu » (ex. lien depuis Lieux → Contribuer).
+  final String? contentHintOverride;
 
   @override
   ConsumerState<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -966,9 +970,27 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
+    void safePopCreate() {
+      if (!mounted) return;
+      try {
+        if (context.canPop()) {
+          context.pop();
+          return;
+        }
+        context.go('/home');
+      } catch (_) {
+        if (mounted) {
+          try {
+            context.go('/home');
+          } catch (_) {}
+        }
+      }
+    }
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        leading: BackButton(onPressed: safePopCreate),
         title: Text(strings.createPost),
         actions: [
           IconButton(
@@ -1289,9 +1311,11 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
                 labelText: strings.content,
-                hintText: _forSelf
-                    ? strings.postContentHint
-                    : strings.postCreateContentHintCaregiver,
+                hintText: (widget.contentHintOverride?.trim().isNotEmpty ?? false)
+                    ? widget.contentHintOverride!.trim()
+                    : (_forSelf
+                        ? strings.postContentHint
+                        : strings.postCreateContentHintCaregiver),
                 border: const OutlineInputBorder(),
               ),
               maxLines: 8,

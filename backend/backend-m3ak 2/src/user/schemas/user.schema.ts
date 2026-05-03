@@ -28,7 +28,11 @@ export class User {
   telephone: string | null;
 
   @ApiProperty({ enum: Role, description: 'Rôle utilisateur' })
-  @Prop({ type: String, enum: Role, required: true })
+  @Prop({
+    type: String,
+    enum: Object.values(Role),
+    required: true,
+  })
   role: Role;
 
   @ApiPropertyOptional({ description: 'Type de handicap (pour HANDICAPE)' })

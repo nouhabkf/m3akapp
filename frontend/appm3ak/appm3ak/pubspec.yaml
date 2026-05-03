@@ -18,6 +18,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
 
   # HTTP & Storage
+  http: ^1.2.0
   dio: ^5.7.0
   flutter_secure_storage: ^9.2.4
   shared_preferences: ^2.3.3
@@ -51,6 +52,9 @@ dependencies:
   lottie: ^3.3.1
   permission_handler: ^11.3.1
   geolocator: ^13.0.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  qr_flutter: ^4.1.0
   video_player: ^2.9.2
   speech_to_text: ^7.0.0
 
@@ -73,6 +77,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/accessibility/
     - assets/images/
     - assets/animations/
     - assets/videos/

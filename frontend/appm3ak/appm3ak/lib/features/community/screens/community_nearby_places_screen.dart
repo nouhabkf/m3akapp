@@ -404,7 +404,7 @@ class _CommunityNearbyPlacesScreenState
             if (nav.canPop()) {
               nav.pop();
             } else {
-              context.go('/home?tab=3&communityTab=0');
+              context.go('/home?tab=3');
             }
           },
         ),

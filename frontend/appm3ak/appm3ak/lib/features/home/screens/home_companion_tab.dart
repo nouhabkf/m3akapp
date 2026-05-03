@@ -38,7 +38,12 @@ class _HomeCompanionTabState extends ConsumerState<HomeCompanionTab> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authStateProvider).valueOrNull!;
+    final user = ref.watch(authStateProvider).valueOrNull;
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final strings =
         AppStrings.fromPreferredLanguage(user.preferredLanguage?.name);
     final theme = Theme.of(context);

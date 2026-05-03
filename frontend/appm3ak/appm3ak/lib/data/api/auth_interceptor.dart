@@ -15,9 +15,12 @@ class AuthInterceptor extends Interceptor {
 
   final Future<String?> Function() getAccessToken;
 
-  static bool _isPathWithoutAuth(String path) {
-    final normalized = path.split('?').first;
-    return _pathsWithoutAuth.any((p) => normalized.endsWith(p));
+  static bool _isPathWithoutAuth(String pathOrUrl) {
+    var path = pathOrUrl.split('?').first;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      path = Uri.tryParse(path)?.path ?? path;
+    }
+    return _pathsWithoutAuth.any((p) => path == p || path.endsWith(p));
   }
 
   @override

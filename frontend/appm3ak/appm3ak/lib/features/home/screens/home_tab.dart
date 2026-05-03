@@ -13,7 +13,12 @@ class HomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authStateProvider).valueOrNull!;
+    final user = ref.watch(authStateProvider).valueOrNull;
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final strings =
         AppStrings.fromPreferredLanguage(user.preferredLanguage?.name);
     final theme = Theme.of(context);
@@ -214,6 +219,12 @@ class HomeTab extends ConsumerWidget {
                     label: strings.learningCenter,
                     primary: primary,
                     onTap: () => context.push('/m3ak-inclusion'),
+                  ),
+                  _ServiceCard(
+                    icon: Icons.event_note_rounded,
+                    label: 'Mes réservations',
+                    primary: const Color(0xFF1A237E),
+                    onTap: () => context.push('/reservations-history'),
                   ),
                   _ServiceCard(
                     icon: Icons.accessibility_new,

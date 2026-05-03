@@ -97,6 +97,16 @@ export class Post {
   @Prop({ type: String, default: null })
   placeText?: string | null;
 
+  /** Slug optionnel (seed / filtrage lieu) — ex. charles_nicolle */
+  @ApiProperty({ description: 'Identifiant lieu normalisé', required: false })
+  @Prop({ type: String, default: null })
+  placeId?: string | null;
+
+  /** Nom complet affiché du lieu (optionnel) */
+  @ApiProperty({ description: 'Nom du lieu', required: false })
+  @Prop({ type: String, default: null })
+  placeName?: string | null;
+
   @ApiProperty({ description: 'Catégorie extraction IA', required: false })
   @Prop({ type: String, default: null })
   placeCategory?: string | null;
@@ -142,6 +152,11 @@ export class Post {
   @ApiProperty({ description: 'IDs ayant déjà voté sur la présence obstacle', required: false })
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })
   obstacleVoterIds: Types.ObjectId[];
+
+  /** Post inséré par script de seed (supprimable en bloc). */
+  @ApiProperty({ description: 'Données de démonstration seed', required: false })
+  @Prop({ type: Boolean, default: false })
+  isSeed?: boolean;
 
   /** Nature du post (flux inclusif, optionnel). */
   @Prop({ type: String, default: null })

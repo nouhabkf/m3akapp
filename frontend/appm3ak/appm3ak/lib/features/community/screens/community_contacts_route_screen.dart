@@ -25,7 +25,7 @@ class CommunityContactsRouteScreen extends ConsumerWidget {
             if (nav.canPop()) {
               nav.pop();
             } else {
-              context.go('/home?tab=3&communityTab=0');
+              context.go('/home?tab=4');
             }
           },
         ),

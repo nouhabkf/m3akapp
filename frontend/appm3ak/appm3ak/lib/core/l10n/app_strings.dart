@@ -114,6 +114,10 @@ class AppStrings {
   String get health => isAr ? 'الصحة' : 'Santé';
   String get transport => isAr ? 'النقل' : 'Transport';
   String get places => isAr ? 'أماكن' : 'Milieux';
+  /// Libellé onglet bas : module lieux / accessibilité.
+  String get navLieux => isAr ? 'الأماكن' : 'Lieux';
+  /// Bouton navigation vers la liste « à proximité ».
+  String get nearbyPlacesNav => isAr ? 'بالقرب مني' : 'À proximité';
   String get phoneNumber => isAr ? 'رقم الهاتف' : 'Numéro de Téléphone';
 
   // Home page

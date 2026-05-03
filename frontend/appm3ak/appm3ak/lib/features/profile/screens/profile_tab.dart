@@ -294,6 +294,14 @@ class _ProfileTabState extends ConsumerState<ProfileTab> {
                     value: user.contact,
                     onTap: () => context.push('/profile-edit'),
                   ),
+                  const SizedBox(height: 8),
+                  _InfoTile(
+                    icon: Icons.event_note_rounded,
+                    iconBg: const Color(0xFF1A237E).withValues(alpha: 0.12),
+                    label: 'Mes réservations',
+                    value: 'Accès adaptés enregistrés sur cet appareil',
+                    onTap: () => context.push('/reservations-history'),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     strings.postShortcutSectionTitle,

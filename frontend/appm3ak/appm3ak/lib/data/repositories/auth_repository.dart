@@ -39,7 +39,10 @@ class AuthRepository {
       
       final response = await _api.dio.post(
         Endpoints.authLogin,
-        data: {'email': email, 'password': password},
+        data: {
+          'email': email.trim().toLowerCase(),
+          'password': password,
+        },
       );
       
       print('✅ [AuthRepository] Connexion réussie');

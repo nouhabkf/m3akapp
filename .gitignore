@@ -55,3 +55,6 @@ coverage/
 # Local duplicate exports (not canonical repo source)
 appm3ak/
 web/
+
+# Modèles IA lourds
+ ai/models/*.joblib
